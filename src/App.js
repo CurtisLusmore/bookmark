@@ -8,15 +8,29 @@ class App extends React.Component {
     const items = JSON.parse(localStorage.getItem('bookmarks')) || [];
     this.state = {
       input: '',
-      items
+      items,
+      matches: null
     };
     this.add = this.add.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   onChange(ev) {
     const input = ev.target.value;
-    this.setState({ input });
+    this.setState(({ items }) => ({
+      input,
+      matches: input.length === 0
+      ? null
+      : items.filter(item => item.keyword.startsWith(input)) }));
+  }
+
+  onSubmit(ev) {
+    ev.preventDefault();
+
+    const { matches } = this.state;
+    if (matches.length === 1) { window.location = matches[0].url; }
+    return false;
   }
 
   add(item) {
@@ -41,10 +55,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { input, items } = this.state;
-    const matches = input.length === 0
-      ? null
-      : items.filter(item => item.keyword.startsWith(input));
+    const { input, matches } = this.state;
 
     let results;
     if (matches === null) results = <></>;
@@ -65,10 +76,12 @@ class App extends React.Component {
     </>;
 
     return <div className="App">
-      <input id="input"
-        value={input} onChange={this.onChange}
-        placeholder="Search for a bookmark..."
-        autoFocus={true} />
+      <form onSubmit={this.onSubmit}>
+        <input id="input"
+          value={input} onChange={this.onChange}
+          placeholder="Search for a bookmark..."
+          autoFocus={true} />
+      </form>
       {results}
     </div>
   }
