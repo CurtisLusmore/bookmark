@@ -39,17 +39,20 @@ class App extends React.Component {
       localStorage.setItem('bookmarks', JSON.stringify(newItems));
       return {
         items: newItems,
-        input: ''
+        input: '',
+        matches: null
       };
     });
   }
 
   remove(item) {
-    this.setState(({ items }) => {
+    this.setState(({ items, matches }) => {
       const newItems = items.filter(({ keyword, url }) => keyword !== item.keyword || url !== item.url);
+      const newMatches = matches.filter(({ keyword, url }) => keyword !== item.keyword || url !== item.url);
       localStorage.setItem('bookmarks', JSON.stringify(newItems));
       return {
-        items: newItems
+        items: newItems,
+        matches: newMatches
       };
     })
   }
